@@ -42,7 +42,7 @@ func WithDialTimeout(d time.Duration) OutOption {
 }
 
 // NewOut returns a new Out which handles both tcp and tls connections.
-func NewOut(sinks, clusterSinks []*Sink, opts ...OutOption) *Out {
+func NewOut(sinks, clusterSinks []*Sink, facility, severity, opts ...OutOption) *Out {
 	out := &Out{
 		dialTimeout: 5 * time.Second,
 	}
@@ -66,6 +66,8 @@ func NewOut(sinks, clusterSinks []*Sink, opts ...OutOption) *Out {
 	}
 	out.sinks = m
 	out.clusterSinks = clusterSinks
+        out.fac = facility
+        out.sev = severity
 
 	for _, o := range opts {
 		o(out)
@@ -85,8 +87,10 @@ func (o *Out) Write(
 	record map[interface{}]interface{},
 	ts time.Time,
 	tag string,
+        fac string,
+        sev string
 ) error {
-	msg, namespace := convert(record, ts, tag)
+	msg, namespace := convert(record, ts, tag, fac, sev)
 
 	var errCount int
 	for _, cs := range o.clusterSinks {
@@ -171,6 +175,8 @@ func convert(
 	record map[interface{}]interface{},
 	ts time.Time,
 	tag string,
+        fac string,
+        sev string,
 ) (*rfc5424.Message, string) {
 	var (
 		logmsg []byte
@@ -259,8 +265,41 @@ func convert(
 		logmsg = append(logmsg, byte('\n'))
 	}
 
+	// map out all the facility and severity names -> numeric values
+	facilities := map[string]int{
+		"User": rfc5424.User,
+		"Mail": rfc5424.Mail,
+		"Daemon": rfc5424.Daemon,
+		"Auth": rfc5424.Auth,
+		"Syslog": rfc5424.Syslog,
+		"Lpr": rfc5424.Lpr,
+		"News": rfc5424.News,
+		"Uucp": rfc5424.Uucp,
+		"Cron": rfc5424.Cron,
+		"Authpriv": rfc5424.Authpriv,
+		"Ftp": rfc5424.Ftp,
+		"Local0": rfc5424.Local0,
+		"Local1": rfc5424.Local1,
+		"Local2": rfc5424.Local2,
+		"Local3": rfc5424.Local3,
+		"Local4": rfc5424.Local4,
+		"Local5": rfc5424.Local5,
+		"Local6": rfc5424.Local6,
+		"Local7": rfc5424.Local7
+	}
+
+	severities := map[string]int{
+		"Alert": rfc5424.Alert,
+		"Crit": rfc5424.Crit,
+		"Error": rfc5424.Error,
+		"Warning": rfc5424.Warning,
+		"Notice": rfc5424.Notice,
+		"Info": rfc5424.Info,
+		"Debug": rfc5424.Debug
+	}
+
 	return &rfc5424.Message{
-		Priority:  rfc5424.Info + rfc5424.User,
+		Priority:  facilities[fac] + severities[sev],
 		Timestamp: ts,
 		Hostname:  host,
 		AppName:   appName,

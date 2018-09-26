@@ -26,9 +26,19 @@ func FLBPluginRegister(ctx unsafe.Pointer) int {
 func FLBPluginInit(ctx unsafe.Pointer) int {
 	s := output.FLBPluginConfigKey(ctx, "sinks")
 	cs := output.FLBPluginConfigKey(ctx, "clustersinks")
+	facility := strings.Title(output.FLBPluginConfigKey(ctx, "facility"))
+	severity := strings.Title(output.FLBPluginConfigKey(ctx, "severity"))
 	if s == "" && cs == "" {
 		log.Println("[out_syslog] ERROR: sinks can't be empty")
 		return output.FLB_ERROR
+	}
+
+	if facility == "" {
+		facility = "User"
+	}
+
+	if severity == "" {
+		severity = "Info"
 	}
 
 	log.Println("[out_syslog] sinks =", s)
@@ -58,7 +68,7 @@ func FLBPluginInit(ctx unsafe.Pointer) int {
 		log.Println("[out_syslog] require at least one sink or cluster sink")
 		return output.FLB_ERROR
 	}
-	out = syslog.NewOut(sinks, clusterSinks)
+	out = syslog.NewOut(sinks, clusterSinks, facility, severity)
 	return output.FLB_OK
 }
 

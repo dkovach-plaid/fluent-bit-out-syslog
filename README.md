@@ -63,7 +63,9 @@ fluent-bit \
 Add the following output section to your Fluent Bit configuration file. Note
 that the `EnableTLS` and `InsecureSkipVerify` configurations are optional and
 only needed if you are connecting to an endpoint that supports TLS. By
-default, both of those optional fields are false.
+default, both of those optional fields are false. The Facility and Severity
+fields will accept any rfc5424-compliant names. Facility defaults to "User"
+and Severity defaults to "Info" if omitted.
 
 # Sample Config File
 ## Plain syslog output plugin
@@ -97,6 +99,8 @@ default, both of those optional fields are false.
 [OUTPUT]
     Name syslog
     Match *
+    Facility local7
+    Severity warning
     Sinks [{"addr":"logs.papertrailapp.com:18271", "namespace":"myns", "enable_tls":"true", "insecure_skip_verify":"true"}]
     ClusterSinks [{"addr":"logs.papertrailapp.com:18272", "enable_tls":"true", "insecure_skip_verify":"true"}]
 ```
