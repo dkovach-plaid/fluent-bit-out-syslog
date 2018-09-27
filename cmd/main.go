@@ -68,7 +68,7 @@ func FLBPluginInit(ctx unsafe.Pointer) int {
 		log.Println("[out_syslog] require at least one sink or cluster sink")
 		return output.FLB_ERROR
 	}
-	out = syslog.NewOut(sinks, clusterSinks, facility, severity)
+	out = syslog.NewOut(sinks, facility, severity, clusterSinks)
 	return output.FLB_OK
 }
 
