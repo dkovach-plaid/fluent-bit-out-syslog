@@ -260,7 +260,7 @@ func convert(
 	}
 
 	return &rfc5424.Message{
-		Priority:  rfc5424.Info + rfc5424.User,
+		Priority:  rfc5424.Info + rfc5424.Local7,
 		Timestamp: ts,
 		Hostname:  host,
 		AppName:   appName,
