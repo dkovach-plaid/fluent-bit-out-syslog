@@ -29,10 +29,10 @@ type TLS struct {
 // Out writes fluentbit messages via syslog TCP (RFC 5424 and RFC 6587).
 type Out struct {
 	sinks        map[string][]*Sink
+        facility     string
+        severity     string
 	clusterSinks []*Sink
 	dialTimeout  time.Duration
-        fac          string
-        sev          string
 }
 
 type OutOption func(*Out)
@@ -47,6 +47,8 @@ func WithDialTimeout(d time.Duration) OutOption {
 func NewOut(sinks, facility, severity, clusterSinks []*Sink, opts ...OutOption) *Out {
 	out := &Out{
 		dialTimeout: 5 * time.Second,
+		facility: facility,
+		severity: severity,
 	}
 
 	m := make(map[string][]*Sink)
@@ -68,8 +70,6 @@ func NewOut(sinks, facility, severity, clusterSinks []*Sink, opts ...OutOption) 
 	}
 	out.sinks = m
 	out.clusterSinks = clusterSinks
-        out.fac = facility
-        out.sev = severity
 
 	for _, o := range opts {
 		o(out)
