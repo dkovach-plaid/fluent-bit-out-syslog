@@ -31,6 +31,8 @@ type Out struct {
 	sinks        map[string][]*Sink
 	clusterSinks []*Sink
 	dialTimeout  time.Duration
+        fac
+        sev
 }
 
 type OutOption func(*Out)
@@ -266,7 +268,7 @@ func convert(
 	}
 
 	// map out all the facility and severity names -> numeric values
-	facilities := map[string]int{
+	facilities := map[string]rfc5424.Priority{
 		"User": rfc5424.User,
 		"Mail": rfc5424.Mail,
 		"Daemon": rfc5424.Daemon,
@@ -288,7 +290,7 @@ func convert(
 		"Local7": rfc5424.Local7,
 	}
 
-	severities := map[string]int{
+	severities := map[string]rfc5424.Priority{
 		"Alert": rfc5424.Alert,
 		"Crit": rfc5424.Crit,
 		"Error": rfc5424.Error,
