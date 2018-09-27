@@ -42,7 +42,7 @@ func WithDialTimeout(d time.Duration) OutOption {
 }
 
 // NewOut returns a new Out which handles both tcp and tls connections.
-func NewOut(sinks, clusterSinks []*Sink, facility, severity, opts ...OutOption) *Out {
+func NewOut(sinks, facility, severity, clusterSinks []*Sink, opts ...OutOption) *Out {
 	out := &Out{
 		dialTimeout: 5 * time.Second,
 	}
@@ -88,7 +88,7 @@ func (o *Out) Write(
 	ts time.Time,
 	tag string,
         fac string,
-        sev string
+        sev string,
 ) error {
 	msg, namespace := convert(record, ts, tag, fac, sev)
 
@@ -285,7 +285,7 @@ func convert(
 		"Local4": rfc5424.Local4,
 		"Local5": rfc5424.Local5,
 		"Local6": rfc5424.Local6,
-		"Local7": rfc5424.Local7
+		"Local7": rfc5424.Local7,
 	}
 
 	severities := map[string]int{
@@ -295,7 +295,7 @@ func convert(
 		"Warning": rfc5424.Warning,
 		"Notice": rfc5424.Notice,
 		"Info": rfc5424.Info,
-		"Debug": rfc5424.Debug
+		"Debug": rfc5424.Debug,
 	}
 
 	return &rfc5424.Message{
