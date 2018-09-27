@@ -31,8 +31,8 @@ type Out struct {
 	sinks        map[string][]*Sink
 	clusterSinks []*Sink
 	dialTimeout  time.Duration
-        fac
-        sev
+        fac          string
+        sev          string
 }
 
 type OutOption func(*Out)
