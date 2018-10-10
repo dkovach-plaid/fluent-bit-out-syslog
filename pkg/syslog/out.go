@@ -242,12 +242,7 @@ func convert(
 
 	if len(k8sMap) != 0 {
 		// sample: kube-system/pod/kube-dns-86f4d74b45-lfgj7/dnsmasq
-		appName = fmt.Sprintf(
-			"%s/%s/%s",
-			namespaceName,
-			podName,
-			containerName,
-		)
+		appName = namespaceName
 		// APP-NAME is limited to 48 chars in RFC 5424
 		// https://tools.ietf.org/html/rfc5424#section-6
 		if len(appName) > 48 {
@@ -260,7 +255,11 @@ func convert(
 	}
 
 	return &rfc5424.Message{
-		Priority:  rfc5424.Info + rfc5424.Local7,
+		// the rfc5424 project is horribly broken and none of the
+		// Local* facilities actually work because of it.
+		// so we hard-code the correct priority value. ugh.
+                // 190 = local7.info (23*8+6)
+		Priority:  190,
 		Timestamp: ts,
 		Hostname:  host,
 		AppName:   appName,
